@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackground">
+    <ImageView
+        android:id="@+id/item_view_guide_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/guide_icon_min_height"
+        android:minWidth="@dimen/guide_icon_min_width"
+        android:padding="@dimen/x2"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        tools:src="@mipmap/ic_launcher"
+        />
+
+    <TextView
+        android:id="@+id/item_view_guide_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/x2"
+        android:paddingBottom="@dimen/x2"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@id/item_view_guide_icon"
+        android:layout_toEndOf="@id/item_view_guide_icon"
+        android:textAppearance="@style/TextAppearance.Guide.Title"
+        tools:text="Calapalooza"
+        />
+
+    <TextView
+        android:id="@+id/item_view_guide_venue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/x2"
+        tools:text="Berkeley, CA"
+        android:layout_below="@+id/item_view_guide_name"
+        android:layout_toRightOf="@+id/item_view_guide_icon"
+        android:layout_toEndOf="@+id/item_view_guide_icon"/>
+
+    <TextView
+        android:id="@+id/item_view_guide_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/x2"
+        android:layout_below="@id/item_view_guide_venue"
+        android:layout_toRightOf="@+id/item_view_guide_icon"
+        android:layout_toEndOf="@+id/item_view_guide_icon"
+        tools:text="May 5th to 7th, 2017"
+        />
+
+</RelativeLayout>
