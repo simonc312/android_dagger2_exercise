@@ -1,8 +1,11 @@
 package com.simonc312.androidapiexercise;
 
 import android.app.Application;
+import android.support.annotation.NonNull;
 
 import com.simonc312.androidapiexercise.dagger.DaggerMainAppComponent;
+import com.simonc312.androidapiexercise.dagger.GuideModule;
+import com.simonc312.androidapiexercise.dagger.GuideSubcomponent;
 import com.simonc312.androidapiexercise.dagger.MainAppComponent;
 import com.simonc312.androidapiexercise.dagger.MainModule;
 
@@ -30,4 +33,7 @@ public class MainApplication extends Application {
     }
 
 
+    public static GuideSubcomponent getGuideComponent(@NonNull final UpcomingGuidePresenter.View view) {
+        return instance.mainAppComponent.plus(new GuideModule(view));
+    }
 }

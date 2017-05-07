@@ -62,7 +62,7 @@ public class UpcomingGuidePresenter implements Callback<Guides> {
     }
     //endregion
 
-    interface View {
+    public interface View {
         void update(@NonNull List<Guide> newGuides);
 
         void onError(@NonNull Throwable error);

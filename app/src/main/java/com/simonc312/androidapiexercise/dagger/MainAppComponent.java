@@ -1,7 +1,5 @@
 package com.simonc312.androidapiexercise.dagger;
 
-import com.simonc312.androidapiexercise.MainActivity;
-
 import javax.inject.Singleton;
 
 import dagger.Component;
@@ -13,5 +11,5 @@ import dagger.Component;
 })
 public interface MainAppComponent {
 
-    MainActivity injectsMainActivity(MainActivity mainActivity);
+    GuideSubcomponent plus(GuideModule guideModule);
 }
