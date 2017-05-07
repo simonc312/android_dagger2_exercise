@@ -1,5 +1,7 @@
 package com.simonc312.androidapiexercise;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -17,7 +19,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 public class MainActivity extends AppCompatActivity
-        implements UpcomingGuidePresenter.View{
+        implements UpcomingGuidePresenter.View, GuideAdapter.ItemActionHandler {
 
     @Inject
     ApiService apiService;
@@ -41,6 +43,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         this.presenter = new UpcomingGuidePresenter(apiService, this);
         this.adapter = new GuideAdapter(this, picasso);
+        this.adapter.setItemActionHandler(this);
         final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.activity_main_recycler_view);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -58,6 +61,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         if(this.adapter != null) {
+            this.adapter.setItemActionHandler(null);
             this.adapter = null;
         }
     }
@@ -73,6 +77,15 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onError(@NonNull Throwable error) {
         Toast.makeText(this, R.string.upcoming_guide_request_error, Toast.LENGTH_SHORT).show();
+    }
+    //endregion
+
+    //region ItemActionHander
+    @Override
+    public void onClicked(@NonNull final Guide guide) {
+        final Uri guideUri = Uri.parse(guide.getGuideUrl());
+        final Intent openUrlIntent = new Intent(Intent.ACTION_VIEW).setData(guideUri);
+        startActivity(openUrlIntent);
     }
     //endregion
 }

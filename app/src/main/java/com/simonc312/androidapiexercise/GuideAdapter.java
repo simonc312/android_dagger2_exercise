@@ -1,9 +1,8 @@
 package com.simonc312.androidapiexercise;
 
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,8 +22,11 @@ public class GuideAdapter extends RecyclerView.Adapter<GuideAdapter.ViewHolder> 
     private final LayoutInflater layoutInflater;
     private final Picasso picasso;
     private List<Guide> dataStore;
+    @Nullable
+    private ItemActionHandler itemActionHandler;
 
-    public GuideAdapter(@NonNull final Context context, Picasso picasso) {
+    public GuideAdapter(@NonNull final Context context,
+                        @NonNull final Picasso picasso) {
         super();
         this.context = context;
         this.layoutInflater = LayoutInflater.from(context);
@@ -44,9 +46,10 @@ public class GuideAdapter extends RecyclerView.Adapter<GuideAdapter.ViewHolder> 
                 if (RecyclerView.NO_POSITION == position) {
                     return;
                 }
-                final String guideUrl = GuideAdapter.this.dataStore.get(position).getGuideUrl();
-                final Intent openUrlIntent = new Intent(Intent.ACTION_VIEW).setData(Uri.parse(guideUrl));
-                GuideAdapter.this.context.startActivity(openUrlIntent);
+                final Guide guide = GuideAdapter.this.dataStore.get(position);
+                if (GuideAdapter.this.itemActionHandler != null) {
+                    GuideAdapter.this.itemActionHandler.onClicked(guide);
+                }
             }
         });
         return viewHolder;
@@ -77,6 +80,10 @@ public class GuideAdapter extends RecyclerView.Adapter<GuideAdapter.ViewHolder> 
         notifyDataSetChanged(); //expensive
     }
 
+    public void setItemActionHandler(@Nullable final ItemActionHandler itemActionHandler) {
+        this.itemActionHandler = itemActionHandler;
+    }
+
     static class ViewHolder extends RecyclerView.ViewHolder {
 
         private final ImageView iconImageView;
@@ -97,5 +104,9 @@ public class GuideAdapter extends RecyclerView.Adapter<GuideAdapter.ViewHolder> 
             this.venueTextView.setText(guide.getVenueDisplayValue());
             this.dateTextView.setText(guide.getDateRangeDisplayValue());
         }
+    }
+
+    interface ItemActionHandler {
+        void onClicked(Guide guide);
     }
 }
