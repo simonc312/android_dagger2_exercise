@@ -1,10 +1,10 @@
 package com.simonc312.androidapiexercise;
 
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.customtabs.CustomTabsIntent;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -24,7 +24,8 @@ public class MainActivity extends AppCompatActivity
     UpcomingGuidePresenter presenter;
     @Inject
     Picasso picasso;
-
+    @Inject
+    CustomTabsIntent.Builder customTabsBuilder;
 
     @Nullable
     private GuideAdapter adapter;
@@ -80,8 +81,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onClicked(@NonNull final Guide guide) {
         final Uri guideUri = Uri.parse(guide.getGuideUrl());
-        final Intent openUrlIntent = new Intent(Intent.ACTION_VIEW).setData(guideUri);
-        startActivity(openUrlIntent);
+        this.customTabsBuilder.build().launchUrl(this, guideUri);
     }
     //endregion
 }

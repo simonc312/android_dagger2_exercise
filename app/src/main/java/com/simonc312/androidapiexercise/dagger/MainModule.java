@@ -2,7 +2,10 @@ package com.simonc312.androidapiexercise.dagger;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.customtabs.CustomTabsIntent;
+import android.support.v4.content.ContextCompat;
 
+import com.simonc312.androidapiexercise.R;
 import com.squareup.picasso.Picasso;
 
 import javax.inject.Singleton;
@@ -30,5 +33,15 @@ public class MainModule {
     @Singleton
     Picasso providePicasso(@NonNull final Context context) {
         return Picasso.with(context);
+    }
+
+    @Provides
+    @Singleton
+    CustomTabsIntent.Builder provideCustomTabsIntentBuilder(@NonNull final Context context) {
+        return new CustomTabsIntent.Builder() //TODO pass session
+                .enableUrlBarHiding()
+                .addDefaultShareMenuItem()
+                .setShowTitle(true)
+                .setToolbarColor(ContextCompat.getColor(context, R.color.colorPrimary));
     }
 }
