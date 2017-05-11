@@ -8,6 +8,8 @@ import android.support.customtabs.CustomTabsIntent;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.simonc312.androidapiexercise.api.models.Guide;
@@ -29,6 +31,8 @@ public class MainActivity extends AppCompatActivity
 
     @Nullable
     private GuideAdapter adapter;
+    @Nullable
+    private ProgressBar progressBar;
 
     public MainActivity() {
         super();
@@ -40,6 +44,8 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        this.progressBar = (ProgressBar) findViewById(R.id.activity_main_progress_bar);
+        this.progressBar.setVisibility(View.VISIBLE);
         this.adapter = new GuideAdapter(this, picasso);
         this.adapter.setItemActionHandler(this);
         final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.activity_main_recycler_view);
@@ -57,15 +63,23 @@ public class MainActivity extends AppCompatActivity
             this.presenter.cancel();
         }
 
-        if(this.adapter != null) {
+        if (this.adapter != null) {
             this.adapter.setItemActionHandler(null);
             this.adapter = null;
+        }
+
+        if (this.progressBar != null) {
+            this.progressBar.clearAnimation();
+            this.progressBar = null;
         }
     }
 
     //region UpcomingGuidePresenter.View
     @Override
     public void update(@NonNull List<Guide> newGuides) {
+        if (this.progressBar != null) {
+            this.progressBar.setVisibility(View.GONE);
+        }
         if (this.adapter != null) {
             this.adapter.update(newGuides);
         }
