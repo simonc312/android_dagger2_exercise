@@ -6,18 +6,23 @@ import android.support.test.espresso.contrib.RecyclerViewActions;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.simonc312.androidapiexercise.espresso.OkHttpIdlingResource;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import javax.inject.Inject;
+
+import okhttp3.OkHttpClient;
+
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.intent.Intents.intended;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.toPackage;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.view.View.GONE;
 
 /**
  * Created by Simon on 5/10/2017.
@@ -26,28 +31,17 @@ import static android.view.View.GONE;
 @RunWith(AndroidJUnit4.class)
 public class MainActivityInstrumentedTest {
 
+    @Inject
+    OkHttpClient okHttpClient;
+
     @Rule
     public IntentsTestRule<MainActivity> activityTestRule = new IntentsTestRule<>(MainActivity.class);
     private IdlingResource idlingResource;
 
     @Before
     public void setUp() {
-        idlingResource = new IdlingResource() {
-            @Override
-            public String getName() {
-                return "MainActivityIdlingResource";
-            }
-
-            @Override
-            public boolean isIdleNow() {
-                return activityTestRule.getActivity().findViewById(R.id.activity_main_progress_bar).getVisibility() == GONE;
-            }
-
-            @Override
-            public void registerIdleTransitionCallback(ResourceCallback callback) {
-
-            }
-        };
+        TestApplication.getInstance().getFakeMainAppComponent().injectsMainActivityInstrumentedTest(this);
+        idlingResource = new OkHttpIdlingResource(okHttpClient.dispatcher());
         Espresso.registerIdlingResources(idlingResource);
     }
 
@@ -64,4 +58,5 @@ public class MainActivityInstrumentedTest {
 
         intended(toPackage("com.android.chrome"));
     }
+
 }

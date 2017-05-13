@@ -23,7 +23,11 @@ public class MainApplication extends Application {
     public void onCreate() {
         super.onCreate();
         MainApplication.instance = this;
-        this.mainAppComponent = DaggerMainAppComponent.builder()
+        mainAppComponent = buildGraph();
+    }
+
+    protected MainAppComponent buildGraph() {
+        return DaggerMainAppComponent.builder()
                 .mainModule(new MainModule(this))
                 .build();
     }
