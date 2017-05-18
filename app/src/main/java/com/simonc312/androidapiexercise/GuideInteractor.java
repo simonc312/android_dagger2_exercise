@@ -1,0 +1,100 @@
+package com.simonc312.androidapiexercise;
+
+import android.support.annotation.NonNull;
+
+import com.simonc312.androidapiexercise.api.ApiService;
+import com.simonc312.androidapiexercise.api.models.Guide;
+import com.simonc312.androidapiexercise.api.models.Guides;
+import com.simonc312.androidapiexercise.components.room.GuideDAO;
+
+import java.net.UnknownHostException;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+/**
+ * Created by Simon on 5/17/2017.
+ */
+
+public class GuideInteractor implements Callback<Guides> {
+    private final ApiService apiService;
+    private final GuideDAO guideDAO;
+    private Call<Guides> currentCall;
+    private InteractorOutput interactorOutput;
+
+    public GuideInteractor(@NonNull final ApiService apiService,
+                           @NonNull final GuideDAO guideDAO) {
+        this.apiService = apiService;
+        this.guideDAO = guideDAO;
+        this.interactorOutput = new EmptyInteractorOutput();
+    }
+    /**
+     * Make request to get upcoming guide date
+     */
+    public void get() {
+        this.currentCall = this.apiService.getUpcomingGuides();
+        this.currentCall.enqueue(this);
+    }
+
+    /**
+     * Cancel existing request.
+     */
+    public void cancel() {
+        if (this.currentCall != null) {
+            this.currentCall.cancel();
+        }
+    }
+
+    //region Callback
+    @Override
+    public void onResponse(@NonNull final Call<Guides> call,
+                           @NonNull final Response<Guides> response) {
+        final List<Guide> guides = response.body().getData();
+        this.interactorOutput.onGuidesAvailable(guides);
+        this.guideDAO.insertGuides(guides); //todo do in background thread
+    }
+
+    @Override
+    public void onFailure(@NonNull final Call<Guides> call,
+                          @NonNull final Throwable t) {
+        if (t instanceof UnknownHostException) {
+            //todo do in background thread else throws NetworkOnMainThreadException
+            this.interactorOutput.onGuidesAvailableOffline(this.guideDAO.getAllGuides());
+            return;
+        }
+        this.interactorOutput.onGuidesUnavailable();
+    }
+
+    public void setOutput(@NonNull final InteractorOutput output) {
+        this.interactorOutput = output;
+    }
+    //endregion
+
+    public interface InteractorOutput {
+        void onGuidesAvailable(List<Guide> guides);
+
+        void onGuidesAvailableOffline(List<Guide> guides);
+
+        void onGuidesUnavailable();
+    }
+
+    private static class EmptyInteractorOutput implements InteractorOutput {
+
+        @Override
+        public void onGuidesAvailable(List<Guide> guides) {
+            //do nothing
+        }
+
+        @Override
+        public void onGuidesAvailableOffline(List<Guide> guides) {
+
+        }
+
+        @Override
+        public void onGuidesUnavailable() {
+
+        }
+    }
+}

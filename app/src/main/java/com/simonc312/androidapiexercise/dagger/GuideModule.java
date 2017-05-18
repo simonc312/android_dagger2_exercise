@@ -2,8 +2,10 @@ package com.simonc312.androidapiexercise.dagger;
 
 import android.support.annotation.NonNull;
 
+import com.simonc312.androidapiexercise.GuideInteractor;
 import com.simonc312.androidapiexercise.UpcomingGuidePresenter;
 import com.simonc312.androidapiexercise.api.ApiService;
+import com.simonc312.androidapiexercise.components.room.MainAppDatabase;
 
 import dagger.Module;
 import dagger.Provides;
@@ -18,7 +20,16 @@ public class GuideModule {
     }
 
     @Provides
-    UpcomingGuidePresenter provideUpcomingGuidePresenter(@NonNull final ApiService apiService) {
-        return new UpcomingGuidePresenter(apiService, this.view);
+    UpcomingGuidePresenter provideUpcomingGuidePresenter(@NonNull final GuideInteractor guideInteractor) {
+        final UpcomingGuidePresenter presenter = new UpcomingGuidePresenter(guideInteractor, this.view);
+        guideInteractor.setOutput(presenter);
+        return presenter;
+    }
+
+    //todo should persistent across configuration changes
+    @Provides
+    GuideInteractor provideGuideInteractor(@NonNull final ApiService apiService,
+                                           @NonNull final MainAppDatabase mainAppDatabase) {
+        return new GuideInteractor(apiService, mainAppDatabase.guideDAO());
     }
 }

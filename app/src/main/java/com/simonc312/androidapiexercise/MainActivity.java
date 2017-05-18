@@ -4,6 +4,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -86,8 +87,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onError(@NonNull Throwable error) {
-        Toast.makeText(this, R.string.upcoming_guide_request_error, Toast.LENGTH_SHORT).show();
+    public void showToast(@StringRes int messageRes) {
+        Toast.makeText(this, messageRes, Toast.LENGTH_SHORT).show();
     }
     //endregion
 
