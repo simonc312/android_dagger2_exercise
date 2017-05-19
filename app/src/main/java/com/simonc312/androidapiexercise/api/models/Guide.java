@@ -47,6 +47,9 @@ public class Guide {
     //Todo move to ViewModel class
     @NonNull
     public String getVenueDisplayValue() {
+        if (venue == null) {
+            return "Venue Location TBA";
+        }
         String city = venue.getCity();
         String state = venue.getState();
         if (city == null || state == null) {

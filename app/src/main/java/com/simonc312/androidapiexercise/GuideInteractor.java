@@ -1,5 +1,6 @@
 package com.simonc312.androidapiexercise;
 
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
 import com.simonc312.androidapiexercise.api.ApiService;
@@ -53,15 +54,32 @@ public class GuideInteractor implements Callback<Guides> {
                            @NonNull final Response<Guides> response) {
         final List<Guide> guides = response.body().getData();
         this.interactorOutput.onGuidesAvailable(guides);
-        this.guideDAO.insertGuides(guides); //todo do in background thread
+        final AsyncTask<List<Guide>, Void, Void> insertGuidesTask = new AsyncTask<List<Guide>, Void, Void>() {
+            @Override
+            protected Void doInBackground(List<Guide> ... guides) {
+                GuideInteractor.this.guideDAO.insertGuides(guides[0]);
+                return null;
+            }
+        };
+        insertGuidesTask.execute(guides);
     }
 
     @Override
     public void onFailure(@NonNull final Call<Guides> call,
                           @NonNull final Throwable t) {
         if (t instanceof UnknownHostException) {
-            //todo do in background thread else throws NetworkOnMainThreadException
-            this.interactorOutput.onGuidesAvailableOffline(this.guideDAO.getAllGuides());
+            final AsyncTask<Void, Void,List<Guide>> fetchGuidesTask = new AsyncTask<Void, Void, List<Guide>>() {
+                @Override
+                protected List<Guide> doInBackground(Void... voids) {
+                    return GuideInteractor.this.guideDAO.getAllGuides();
+                }
+
+                @Override
+                protected void onPostExecute(List<Guide> guides) {
+                    GuideInteractor.this.interactorOutput.onGuidesAvailableOffline(guides);
+                }
+            };
+            fetchGuidesTask.execute();
             return;
         }
         this.interactorOutput.onGuidesUnavailable();
