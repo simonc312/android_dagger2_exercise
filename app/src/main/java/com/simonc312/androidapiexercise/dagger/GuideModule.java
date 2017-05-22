@@ -7,6 +7,8 @@ import com.simonc312.androidapiexercise.UpcomingGuidePresenter;
 import com.simonc312.androidapiexercise.api.ApiService;
 import com.simonc312.androidapiexercise.components.room.MainAppDatabase;
 
+import java.util.concurrent.ThreadPoolExecutor;
+
 import dagger.Module;
 import dagger.Provides;
 
@@ -29,7 +31,8 @@ public class GuideModule {
     //todo should persistent across configuration changes
     @Provides
     GuideInteractor provideGuideInteractor(@NonNull final ApiService apiService,
-                                           @NonNull final MainAppDatabase mainAppDatabase) {
-        return new GuideInteractor(apiService, mainAppDatabase.guideDAO());
+                                           @NonNull final MainAppDatabase mainAppDatabase,
+                                           @NonNull final ThreadPoolExecutor threadPoolExecutor) {
+        return new GuideInteractor(apiService, mainAppDatabase.guideDAO(), threadPoolExecutor);
     }
 }

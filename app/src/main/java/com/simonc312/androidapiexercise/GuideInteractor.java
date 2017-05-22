@@ -11,6 +11,7 @@ import com.simonc312.androidapiexercise.components.room.GuideDAO;
 
 import java.net.UnknownHostException;
 import java.util.List;
+import java.util.concurrent.Executor;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -25,11 +26,14 @@ public class GuideInteractor implements Callback<Guides> {
     private final GuideDAO guideDAO;
     private Call<Guides> currentCall;
     private InteractorOutput interactorOutput;
+    private Executor backgroundJobExecutor;
 
     public GuideInteractor(@NonNull final ApiService apiService,
-                           @NonNull final GuideDAO guideDAO) {
+                           @NonNull final GuideDAO guideDAO,
+                           @NonNull final Executor backgroundJobExecutor) {
         this.apiService = apiService;
         this.guideDAO = guideDAO;
+        this.backgroundJobExecutor = backgroundJobExecutor;
         this.interactorOutput = new EmptyInteractorOutput();
     }
     /**
@@ -66,7 +70,7 @@ public class GuideInteractor implements Callback<Guides> {
                 return null;
             }
         };
-        insertGuidesTask.execute(guides);
+        insertGuidesTask.executeOnExecutor(backgroundJobExecutor, guides);
     }
 
     @Override
@@ -95,7 +99,7 @@ public class GuideInteractor implements Callback<Guides> {
                 GuideInteractor.this.interactorOutput.onGuidesAvailableOffline(guides);
             }
         };
-        fetchGuidesTask.execute();
+        fetchGuidesTask.executeOnExecutor(backgroundJobExecutor);
     }
 
     public void setOutput(@NonNull final InteractorOutput output) {

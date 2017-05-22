@@ -6,7 +6,10 @@ import android.support.customtabs.CustomTabsIntent;
 import android.support.v4.content.ContextCompat;
 
 import com.simonc312.androidapiexercise.R;
+import com.simonc312.androidapiexercise.executors.BackgroundJobExecutor;
 import com.squareup.picasso.Picasso;
+
+import java.util.concurrent.ThreadPoolExecutor;
 
 import javax.inject.Singleton;
 
@@ -43,5 +46,11 @@ public class MainModule {
                 .addDefaultShareMenuItem()
                 .setShowTitle(true)
                 .setToolbarColor(ContextCompat.getColor(context, R.color.colorPrimary));
+    }
+
+    @Provides
+    @Singleton
+    ThreadPoolExecutor provideThreadPoolExecutor() {
+        return BackgroundJobExecutor.getInstance();
     }
 }
