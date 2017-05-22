@@ -2,6 +2,7 @@ package com.simonc312.androidapiexercise;
 
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.simonc312.androidapiexercise.api.ApiService;
 import com.simonc312.androidapiexercise.api.models.Guide;
@@ -39,6 +40,10 @@ public class GuideInteractor implements Callback<Guides> {
         this.currentCall.enqueue(this);
     }
 
+    public void get(String query) {
+        getFromLocalStore(query);
+    }
+
     /**
      * Cancel existing request.
      */
@@ -68,26 +73,35 @@ public class GuideInteractor implements Callback<Guides> {
     public void onFailure(@NonNull final Call<Guides> call,
                           @NonNull final Throwable t) {
         if (t instanceof UnknownHostException) {
-            final AsyncTask<Void, Void,List<Guide>> fetchGuidesTask = new AsyncTask<Void, Void, List<Guide>>() {
-                @Override
-                protected List<Guide> doInBackground(Void... voids) {
-                    return GuideInteractor.this.guideDAO.getAllGuides();
-                }
-
-                @Override
-                protected void onPostExecute(List<Guide> guides) {
-                    GuideInteractor.this.interactorOutput.onGuidesAvailableOffline(guides);
-                }
-            };
-            fetchGuidesTask.execute();
-            return;
+            getFromLocalStore(null /*query defaults to all*/);
         }
         this.interactorOutput.onGuidesUnavailable();
+    }
+
+    private void getFromLocalStore(@Nullable final String query) {
+        final AsyncTask<Void, Void,List<Guide>> fetchGuidesTask = new AsyncTask<Void, Void, List<Guide>>() {
+            @Override
+            protected List<Guide> doInBackground(Void... voids) {
+                if (query == null || query.isEmpty()) {
+                    return GuideInteractor.this.guideDAO.getAllGuides();
+                } else {
+                    // Todo vulnerable to sql injection from query
+                    return GuideInteractor.this.guideDAO.getGuidesWithName(GuideDAO.WILDCARD+query+GuideDAO.WILDCARD);
+                }
+            }
+
+            @Override
+            protected void onPostExecute(List<Guide> guides) {
+                GuideInteractor.this.interactorOutput.onGuidesAvailableOffline(guides);
+            }
+        };
+        fetchGuidesTask.execute();
     }
 
     public void setOutput(@NonNull final InteractorOutput output) {
         this.interactorOutput = output;
     }
+
     //endregion
 
     public interface InteractorOutput {

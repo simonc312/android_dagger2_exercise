@@ -30,6 +30,10 @@ public class UpcomingGuidePresenter implements GuideInteractor.InteractorOutput 
         this.guideInteractor.get();
     }
 
+    public void get(String query) {
+        this.guideInteractor.get(query);
+    }
+
     /**
      * Cancel existing request.
      */
@@ -53,6 +57,7 @@ public class UpcomingGuidePresenter implements GuideInteractor.InteractorOutput 
     public void onGuidesUnavailable() {
         this.view.showToast(R.string.upcoming_guide_request_error);
     }
+
     //endregion
 
     public interface View {

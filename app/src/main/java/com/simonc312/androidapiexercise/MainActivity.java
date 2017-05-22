@@ -9,6 +9,7 @@ import android.support.customtabs.CustomTabsIntent;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -34,6 +35,8 @@ public class MainActivity extends AppCompatActivity
     private GuideAdapter adapter;
     @Nullable
     private ProgressBar progressBar;
+    @Nullable
+    private SearchView searchView;
 
     public MainActivity() {
         super();
@@ -45,6 +48,27 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        this.searchView = (SearchView) findViewById(R.id.activity_main_search_view);
+        this.searchView.setQueryHint("Search for upcoming guides");
+        this.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                MainActivity.this.presenter.get(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return true;
+            }
+        });
+        this.searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                MainActivity.this.presenter.get(null);
+                return false;
+            }
+        });
         this.progressBar = (ProgressBar) findViewById(R.id.activity_main_progress_bar);
         this.progressBar.setVisibility(View.VISIBLE);
         this.adapter = new GuideAdapter(this, picasso);
@@ -72,6 +96,12 @@ public class MainActivity extends AppCompatActivity
         if (this.progressBar != null) {
             this.progressBar.clearAnimation();
             this.progressBar = null;
+        }
+
+        if (this.searchView != null) {
+            this.searchView.setOnQueryTextListener(null);
+            this.searchView.setOnCloseListener(null);
+            this.searchView = null;
         }
     }
 

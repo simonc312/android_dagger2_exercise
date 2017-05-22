@@ -18,6 +18,10 @@ import java.util.List;
 @Dao
 public interface GuideDAO {
 
+    String WILDCARD = "%";
+
+    String SINGLE_WILDCARD = "_";
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public void insertGuides(List<Guide> guides);
 
