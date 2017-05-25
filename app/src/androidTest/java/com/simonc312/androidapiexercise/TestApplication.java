@@ -23,6 +23,11 @@ public class TestApplication extends MainApplication {
     }
 
     @Override
+    protected void initStetho() {
+        // no need to use for testing
+    }
+
+    @Override
     protected MainAppComponent buildGraph() {
         return DaggerFakeMainAppComponent.builder()
                 .mainModule(new MainModule(this))

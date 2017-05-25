@@ -5,13 +5,16 @@ import android.support.annotation.NonNull;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.v4.content.ContextCompat;
 
+import com.jakewharton.picasso.OkHttp3Downloader;
 import com.simonc312.androidapiexercise.R;
+import com.squareup.picasso.Downloader;
 import com.squareup.picasso.Picasso;
 
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import okhttp3.OkHttpClient;
 
 @Module
 public class MainModule {
@@ -31,8 +34,17 @@ public class MainModule {
 
     @Provides
     @Singleton
-    Picasso providePicasso(@NonNull final Context context) {
-        return Picasso.with(context);
+    Downloader providesPicassoDownloader(@NonNull final OkHttpClient okHttpClient) {
+        return new OkHttp3Downloader(okHttpClient);
+    }
+
+    @Provides
+    @Singleton
+    Picasso providePicasso(@NonNull final Context context,
+                           @NonNull final Downloader downloader) {
+        return new Picasso.Builder(context)
+                .downloader(downloader)
+                .build();
     }
 
     @Provides
