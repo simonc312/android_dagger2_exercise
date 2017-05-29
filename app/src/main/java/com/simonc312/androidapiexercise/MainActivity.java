@@ -48,27 +48,8 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        this.searchView = (SearchView) findViewById(R.id.activity_main_search_view);
-        this.searchView.setQueryHint("Search for upcoming guides");
-        this.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                MainActivity.this.presenter.get(query);
-                return true;
-            }
+        setUpSearchView();
 
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                return true;
-            }
-        });
-        this.searchView.setOnCloseListener(new SearchView.OnCloseListener() {
-            @Override
-            public boolean onClose() {
-                MainActivity.this.presenter.get(null);
-                return false;
-            }
-        });
         this.progressBar = (ProgressBar) findViewById(R.id.activity_main_progress_bar);
         this.progressBar.setVisibility(View.VISIBLE);
         this.adapter = new GuideAdapter(this, picasso);
@@ -98,11 +79,7 @@ public class MainActivity extends AppCompatActivity
             this.progressBar = null;
         }
 
-        if (this.searchView != null) {
-            this.searchView.setOnQueryTextListener(null);
-            this.searchView.setOnCloseListener(null);
-            this.searchView = null;
-        }
+        tearDownSearchView();
     }
 
     //region UpcomingGuidePresenter.View
@@ -129,4 +106,37 @@ public class MainActivity extends AppCompatActivity
         this.customTabsBuilder.build().launchUrl(this, guideUri);
     }
     //endregion
+
+    private void setUpSearchView() {
+        this.searchView = (SearchView) findViewById(R.id.activity_main_search_view);
+        this.searchView.setIconifiedByDefault(false);
+        this.searchView.setQueryHint(getString(R.string.upcoming_guide_search_hint));
+        this.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                MainActivity.this.presenter.get(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return true;
+            }
+        });
+        this.searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                MainActivity.this.presenter.get(null);
+                return false;
+            }
+        });
+    }
+
+    private void tearDownSearchView() {
+        if (this.searchView != null) {
+            this.searchView.setOnQueryTextListener(null);
+            this.searchView.setOnCloseListener(null);
+            this.searchView = null;
+        }
+    }
 }

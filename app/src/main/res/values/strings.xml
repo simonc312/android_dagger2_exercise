@@ -2,4 +2,5 @@
     <string name="app_name">"AndroidAPIExercise"</string>
     <string name="upcoming_guide_request_error">Sorry an unexpected error occurred while getting guides. Please try again!</string>
     <string name="upcoming_guide_offline_mode">Offline mode</string>
+    <string name="upcoming_guide_search_hint">Search for upcoming guides</string>
 </resources>
