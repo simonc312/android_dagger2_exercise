@@ -3,6 +3,7 @@ package com.simonc312.androidapiexercise.dagger;
 import android.support.annotation.NonNull;
 
 import com.simonc312.androidapiexercise.GuideInteractor;
+import com.simonc312.androidapiexercise.GuideRepository;
 import com.simonc312.androidapiexercise.UpcomingGuidePresenter;
 import com.simonc312.androidapiexercise.api.ApiService;
 import com.simonc312.androidapiexercise.components.room.MainAppDatabase;
@@ -28,11 +29,16 @@ public class GuideModule {
         return presenter;
     }
 
+    @Provides
+    GuideRepository provideGuideRespository(@NonNull final MainAppDatabase mainAppDatabase,
+                                            @NonNull final ThreadPoolExecutor threadPoolExecutor) {
+        return new GuideRepository(mainAppDatabase.guideDAO(), threadPoolExecutor);
+    }
+
     //todo should persistent across configuration changes
     @Provides
     GuideInteractor provideGuideInteractor(@NonNull final ApiService apiService,
-                                           @NonNull final MainAppDatabase mainAppDatabase,
-                                           @NonNull final ThreadPoolExecutor threadPoolExecutor) {
-        return new GuideInteractor(apiService, mainAppDatabase.guideDAO(), threadPoolExecutor);
+                                           @NonNull final GuideRepository guideRepository) {
+        return new GuideInteractor(apiService, guideRepository);
     }
 }

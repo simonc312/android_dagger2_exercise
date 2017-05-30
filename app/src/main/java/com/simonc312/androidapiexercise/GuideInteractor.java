@@ -1,17 +1,15 @@
 package com.simonc312.androidapiexercise;
 
-import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 
 import com.simonc312.androidapiexercise.api.ApiService;
 import com.simonc312.androidapiexercise.api.models.Guide;
 import com.simonc312.androidapiexercise.api.models.Guides;
-import com.simonc312.androidapiexercise.components.room.GuideDAO;
 
 import java.net.UnknownHostException;
 import java.util.List;
-import java.util.concurrent.Executor;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -21,19 +19,16 @@ import retrofit2.Response;
  * Created by Simon on 5/17/2017.
  */
 
-public class GuideInteractor implements Callback<Guides> {
+public class GuideInteractor implements Callback<Guides>,GuideRepository.Callback {
     private final ApiService apiService;
-    private final GuideDAO guideDAO;
+    private final GuideRepository guideRepository;
     private Call<Guides> currentCall;
     private InteractorOutput interactorOutput;
-    private Executor backgroundJobExecutor;
 
     public GuideInteractor(@NonNull final ApiService apiService,
-                           @NonNull final GuideDAO guideDAO,
-                           @NonNull final Executor backgroundJobExecutor) {
+                           @NonNull final GuideRepository guideRepository) {
         this.apiService = apiService;
-        this.guideDAO = guideDAO;
-        this.backgroundJobExecutor = backgroundJobExecutor;
+        this.guideRepository = guideRepository;
         this.interactorOutput = new EmptyInteractorOutput();
     }
     /**
@@ -62,51 +57,42 @@ public class GuideInteractor implements Callback<Guides> {
     public void onResponse(@NonNull final Call<Guides> call,
                            @NonNull final Response<Guides> response) {
         final List<Guide> guides = response.body().getData();
+        handleRetrofitResponse(guides);
+    }
+
+    @VisibleForTesting
+    void handleRetrofitResponse(List<Guide> guides) {
         this.interactorOutput.onGuidesAvailable(guides);
-        final AsyncTask<List<Guide>, Void, Void> insertGuidesTask = new AsyncTask<List<Guide>, Void, Void>() {
-            @Override
-            protected Void doInBackground(List<Guide> ... guides) {
-                GuideInteractor.this.guideDAO.insertGuides(guides[0]);
-                return null;
-            }
-        };
-        insertGuidesTask.executeOnExecutor(backgroundJobExecutor, guides);
+        this.guideRepository.add(guides);
     }
 
     @Override
     public void onFailure(@NonNull final Call<Guides> call,
                           @NonNull final Throwable t) {
+       handleRetrofitFailure(t);
+    }
+
+    @VisibleForTesting
+    void handleRetrofitFailure(@NonNull final Throwable t) {
         if (t instanceof UnknownHostException) {
             getFromLocalStore(null /*query defaults to all*/);
         }
         this.interactorOutput.onGuidesUnavailable();
     }
 
-    private void getFromLocalStore(@Nullable final String query) {
-        final AsyncTask<Void, Void,List<Guide>> fetchGuidesTask = new AsyncTask<Void, Void, List<Guide>>() {
-            @Override
-            protected List<Guide> doInBackground(Void... voids) {
-                if (query == null || query.isEmpty()) {
-                    return GuideInteractor.this.guideDAO.getAllGuides();
-                } else {
-                    // Todo vulnerable to sql injection from query
-                    return GuideInteractor.this.guideDAO.getGuidesWithName(GuideDAO.WILDCARD+query+GuideDAO.WILDCARD);
-                }
-            }
+    @Override
+    public void onRepositoryResponse(List<Guide> guides) {
+        this.interactorOutput.onGuidesAvailableOffline(guides);
+    }
+    //endregion
 
-            @Override
-            protected void onPostExecute(List<Guide> guides) {
-                GuideInteractor.this.interactorOutput.onGuidesAvailableOffline(guides);
-            }
-        };
-        fetchGuidesTask.executeOnExecutor(backgroundJobExecutor);
+    private void getFromLocalStore(@Nullable final String query) {
+        this.guideRepository.get(query, this);
     }
 
-    public void setOutput(@NonNull final InteractorOutput output) {
+    public void setOutput(@Nullable final InteractorOutput output) {
         this.interactorOutput = output;
     }
-
-    //endregion
 
     public interface InteractorOutput {
         void onGuidesAvailable(List<Guide> guides);
