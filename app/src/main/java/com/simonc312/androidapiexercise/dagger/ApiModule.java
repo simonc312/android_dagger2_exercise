@@ -2,6 +2,7 @@ package com.simonc312.androidapiexercise.dagger;
 
 import android.support.annotation.NonNull;
 
+import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.simonc312.androidapiexercise.BuildConfig;
@@ -42,11 +43,19 @@ public class ApiModule {
 
     @Provides
     @Singleton
+    StethoInterceptor providesStethoInterceptor() {
+        return new StethoInterceptor();
+    }
+
+    @Provides
+    @Singleton
     OkHttpClient provideOkHttpClient(@NonNull final UserAgentHeaderInterceptor userAgentHeaderInterceptor,
-                                     @NonNull final LoggingInterceptor loggingInterceptor) {
+                                     @NonNull final LoggingInterceptor loggingInterceptor,
+                                     @NonNull final StethoInterceptor stethoInterceptor) {
         return new OkHttpClient.Builder()
                 .addInterceptor(userAgentHeaderInterceptor)
                 .addInterceptor(loggingInterceptor)
+                .addNetworkInterceptor(stethoInterceptor) //always add last to visualize end results
                 .build();
     }
 
