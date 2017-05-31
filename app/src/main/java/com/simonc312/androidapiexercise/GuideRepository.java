@@ -44,7 +44,7 @@ public class GuideRepository {
                     return GuideRepository.this.guideDAO.getAllGuides();
                 } else {
                     // Todo vulnerable to sql injection from query
-                    return GuideRepository.this.guideDAO.getGuidesWithName(GuideDAO.WILDCARD+query+GuideDAO.WILDCARD);
+                    return GuideRepository.this.guideDAO.getGuidesWithName(GuideDAO.WILDCARD +query+ GuideDAO.WILDCARD);
                 }
             }
 

@@ -80,7 +80,7 @@ class MainActivity : AppCompatActivity(),
 
     //region ItemActionHandler
     override fun onClicked(guide: Guide) {
-        val guideUri = Uri.parse(guide.guideUrl)
+        val guideUri = Uri.parse(guide.getFullGuideUrl())
         this.customTabsBuilder.build().launchUrl(this, guideUri)
     }
     //endregion
