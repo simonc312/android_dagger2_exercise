@@ -49,9 +49,9 @@ class GuideInteractor(private val apiService: ApiService,
     }
 
     @VisibleForTesting
-    internal fun handleRetrofitResponse(guides: List<Guide>) {
+    protected fun handleRetrofitResponse(guides: List<Guide>) {
         this.interactorOutput.onGuidesAvailable(guides)
-        this.guideRepository.add(guides)
+        this.guideRepository += guides
     }
 
     override fun onFailure(call: Call<Guides>,
@@ -60,7 +60,7 @@ class GuideInteractor(private val apiService: ApiService,
     }
 
     @VisibleForTesting
-    internal fun handleRetrofitFailure(t: Throwable) {
+    protected fun handleRetrofitFailure(t: Throwable) {
         if (t is UnknownHostException) {
             getFromLocalStore() /*query defaults to all*/
         }
@@ -76,7 +76,7 @@ class GuideInteractor(private val apiService: ApiService,
         this.guideRepository[query, this]
     }
 
-    fun setOutput(output: InteractorOutput) {
+    fun setOutput(output: InteractorOutput = EmptyInteractorOutput()) {
         this.interactorOutput = output
     }
 
@@ -88,7 +88,7 @@ class GuideInteractor(private val apiService: ApiService,
         fun onGuidesUnavailable()
     }
 
-    private class EmptyInteractorOutput : InteractorOutput {
+    class EmptyInteractorOutput : InteractorOutput {
 
         override fun onGuidesAvailable(guides: List<Guide>) {}
 

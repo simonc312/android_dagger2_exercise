@@ -1,5 +1,10 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: "kotlin-allopen"
+
+allOpen {
+    annotation("com.simonc312.androidapiexercise.KotlinTestOpen")
+}
 
 android {
     compileSdkVersion 25

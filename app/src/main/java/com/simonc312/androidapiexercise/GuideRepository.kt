@@ -9,14 +9,14 @@ import java.util.concurrent.Executor
 /**
  * Created by Simon on 5/29/2017.
  */
-
+@KotlinTestOpen
 class GuideRepository(private val guideDAO: GuideDAO,
                       private val backgroundJobExecutor: Executor) {
 
-    fun add(guides: List<Guide>) {
+    operator fun plusAssign(guides: List<Guide>) {
         val insertGuidesTask = object : AsyncTask<List<Guide>, Void, Void>() {
             override fun doInBackground(vararg guides: List<Guide>): Void? {
-                this@GuideRepository.guideDAO.insertGuides(guides[0])
+                this@GuideRepository.guideDAO.insertGuides(guides.first())
                 return null
             }
         }

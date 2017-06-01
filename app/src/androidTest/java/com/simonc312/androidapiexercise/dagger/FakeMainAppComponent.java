@@ -9,7 +9,8 @@ import dagger.Component;
 @Singleton
 @Component(modules = {
         ApiModule.class,
-        MainModule.class
+        MainModule.class,
+        FakeAppDatabaseModule.class
 })
 public interface FakeMainAppComponent extends MainAppComponent {
 

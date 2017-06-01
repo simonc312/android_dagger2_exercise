@@ -48,7 +48,7 @@ public class GuideInteractorTest {
 
     @After
     public void tearDown() throws Exception {
-        this.guideInteractor.setOutput(null);
+        this.guideInteractor.setOutput(new GuideInteractor.EmptyInteractorOutput());
         this.guideInteractor = null;
     }
 
@@ -80,7 +80,7 @@ public class GuideInteractorTest {
         final List<Guide> fakeGuides = new ArrayList<>(0);
         this.guideInteractor.handleRetrofitResponse(fakeGuides);
         verify(mockOutput, times(1)).onGuidesAvailable(fakeGuides);
-        verify(mockGuideRepository, times(1)).add(fakeGuides);
+        verify(mockGuideRepository, times(1)).plusAssign(fakeGuides);
     }
 
     @Test
