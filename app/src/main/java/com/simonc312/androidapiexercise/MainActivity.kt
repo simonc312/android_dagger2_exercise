@@ -13,6 +13,7 @@ import android.widget.ProgressBar
 import android.widget.Toast
 
 import com.simonc312.androidapiexercise.api.models.Guide
+import com.simonc312.androidapiexercise.api.models.getFullGuideUrl
 import com.squareup.picasso.Picasso
 
 import javax.inject.Inject
