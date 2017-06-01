@@ -94,7 +94,7 @@ public class GuideInteractorTest {
     public void handleRetrofitFailureNoWifi() throws Exception {
         final Throwable fakeThrowable = mock(UnknownHostException.class);
         this.guideInteractor.handleRetrofitFailure(fakeThrowable);
-        verify(mockGuideRepository, times(1)).get(null, guideInteractor);
+        verify(mockGuideRepository, times(1)).get("", guideInteractor);
         verify(mockOutput, times(1)).onGuidesUnavailable();
     }
 

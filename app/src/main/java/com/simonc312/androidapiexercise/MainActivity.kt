@@ -101,7 +101,7 @@ class MainActivity : AppCompatActivity(),
             }
         })
         this.searchView!!.setOnCloseListener {
-            this@MainActivity.presenter.get(null)
+            this@MainActivity.presenter.get()
             false
         }
     }

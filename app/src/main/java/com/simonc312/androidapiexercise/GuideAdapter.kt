@@ -33,9 +33,7 @@ class GuideAdapter(private val context: Context,
                 return@OnClickListener
             }
             val guide = this@GuideAdapter.dataStore[position]
-            if (this@GuideAdapter.itemActionHandler != null) {
-                this@GuideAdapter.itemActionHandler!!.onClicked(guide)
-            }
+            this@GuideAdapter.itemActionHandler?.onClicked(guide)
         })
         return viewHolder
     }
